@@ -1,9 +1,13 @@
 use num_traits::Num;
-use std::cmp::e;
-use super::curve::Curve;
 
 pub struct Lagrange<T: Num + Copy> {
-    points: Vec<(T, T)>,
+    points: Vec<Point<T>>,
+}
+
+pub struct Point<T: Num + Copy> {
+    pub x: T,
+    pub y: T,
+    pub w: T,
 }
 
 impl<T: Num + Copy> Lagrange<T> {
@@ -12,43 +16,47 @@ impl<T: Num + Copy> Lagrange<T> {
             points: vec![],
         }
     }
-
+    
     pub fn len(&self) -> usize {
         self.points.len()
     }
 
     pub fn push(&mut self, x: T, y: T) {
-        let j = self.points.binary_search_by(|(x_j, _)| x_j.cmp(&x));
-        self.points.push((x, y));
-    }
+        let mut w = T::one();
 
-    pub fn basis(&self, j: usize, x: T) -> T {
-        let mut num = T::one();
-        let mut den = T::one();
-
-        for i in 0..(self.len()) {
-            if i == j {
-                continue;
-            }
-
-            num = num * (x - self.points[i].0);
-            den = den * (self.points[j].0 - self.points[i].0);
+        // update barycentric weights
+        for j in 0..self.len() {
+            self.points[j].w = self.points[j].w / (self.points[j].x - x);
+            w = w / (x - self.points[j].x);
         }
 
-        num / den
+        self.points.push(Point {
+            x,
+            y,
+            w,
+        });
+    }
+
+    pub fn get(&self, x: T) -> T {        
+        let mut l = T::one();
+        let mut s = T::zero();
+
+        for j in 0..self.len() {
+            l = l * (x - self.points[j].x);
+            s = s + (self.points[j].y * self.points[j].w / (x - self.points[j].x));
+        }
+
+        l * s
     }
 }
 
-impl<T: Num + Copy> Curve for Lagrange<T> {
-    type T = T;
-    
-    fn get(&self, x: Self::T) -> Self::T {
-        let mut y = T::zero();
-    
-        for j in 0..(self.points.len()) {
-            y = y + (self.basis(j, x) * self.points[j].1);
-        }
+#[macro_export]
+macro_rules! lagrange {
+    ($($x:expr => $y:expr),* $(,)?) => {{
+        let mut c = Lagrange::new();
 
-        y
-    }
+        $( c.push($x, $y); )*
+
+        c
+    }}
 }
