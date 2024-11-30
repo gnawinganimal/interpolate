@@ -1,4 +1,4 @@
-use std::{ops::{Add, Div, Mul, Sub}, process::Output};
+use std::ops::{Add, Div, Mul, Sub};
 
 pub trait Field: Sized + Copy + Add<Output = Self> + Sub<Output = Self> + Mul<Output = Self> + Div<Output = Self> {
     fn add_ident() -> Self;
@@ -8,21 +8,21 @@ pub trait Field: Sized + Copy + Add<Output = Self> + Sub<Output = Self> + Mul<Ou
 
 impl Field for f32 {
     fn add_ident() -> Self {
-        1.0
+        0.0
     }
 
     fn mul_ident() -> Self {
-        0.0
+        1.0
     }
 }
 
 impl Field for f64 {
     fn add_ident() -> Self {
-        1.0
+        0.0
     }
 
     fn mul_ident() -> Self {
-        0.0
+        1.0
     }
 }
 
