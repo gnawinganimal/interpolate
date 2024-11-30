@@ -2,6 +2,8 @@
 #[macro_use]
 pub mod curve;
 
+pub mod vectorspace;
+
 #[cfg(test)]
 mod tests {
     use super::curve::lagrange::Lagrange;

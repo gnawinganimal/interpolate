@@ -1,16 +1,17 @@
-use num_traits::Num;
 
-pub struct Lagrange<T: Num + Copy> {
-    points: Vec<Point<T>>,
+use crate::vectorspace::{Field, Vector};
+
+pub struct Lagrange<V: Vector> {
+    points: Vec<Point<V>>,
 }
 
-pub struct Point<T: Num + Copy> {
-    pub x: T,
-    pub y: T,
-    pub w: T,
+pub struct Point<V: Vector> {
+    pub x: V::F,
+    pub y: V,
+    pub w: V::F,
 }
 
-impl<T: Num + Copy> Lagrange<T> {
+impl<V: Vector> Lagrange<V> {
     pub fn new() -> Self {
         Self {
             points: vec![],
@@ -21,8 +22,8 @@ impl<T: Num + Copy> Lagrange<T> {
         self.points.len()
     }
 
-    pub fn push(&mut self, x: T, y: T) {
-        let mut w = T::one();
+    pub fn push(&mut self, x: V::F, y: V) {
+        let mut w = V::F::mul_ident();
 
         // update barycentric weights
         for j in 0..self.len() {
@@ -37,16 +38,17 @@ impl<T: Num + Copy> Lagrange<T> {
         });
     }
 
-    pub fn get(&self, x: T) -> T {        
-        let mut l = T::one();
-        let mut s = T::zero();
+    pub fn get(&self, x: V::F) -> V {        
+        let mut l = V::F::mul_ident();
+        let mut y = V::add_ident();
 
         for j in 0..self.len() {
             l = l * (x - self.points[j].x);
-            s = s + (self.points[j].y * self.points[j].w / (x - self.points[j].x));
+            y = y + ((self.points[j].w / (x - self.points[j].x)) * self.points[j].y);
         }
+        y = l * y;
 
-        l * s
+        y
     }
 }
 
