@@ -1,12 +1,11 @@
 
 #[macro_use]
-pub mod curve;
-
-pub mod vectorspace;
+pub mod polynomial;
+pub mod vector;
 
 #[cfg(test)]
 mod tests {
-    use super::curve::lagrange::Lagrange;
+    use super::polynomial::lagrange::Lagrange;
 
     #[test]
     fn x() {

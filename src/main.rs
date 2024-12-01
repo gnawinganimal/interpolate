@@ -2,7 +2,7 @@
 #[macro_use]
 extern crate interpolate;
 
-use interpolate::curve::lagrange::Lagrange;
+use interpolate::polynomial::lagrange::Lagrange;
 
 fn main() {
     let l = lagrange! {
